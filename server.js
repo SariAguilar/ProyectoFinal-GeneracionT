@@ -10,27 +10,12 @@ const port = 3000;
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-
-// Definir rutas para las vistas
-app.get('/registrar', (req, res) => {
-    console.log('Se accedió a /registrar');
-    res.sendFile(path.join(__dirname, 'views', 'registrar.html'));
-});
-
-app.get('/login-options', (req, res) => {
-    console.log('Se accedió a /login-options');
-    res.sendFile(path.join(__dirname, 'views', 'login-options.html'));
-});
-
-
-
-
-// Conexión a la base de datos
+//Conexión a la base de datos
 const db = mysql.createConnection({
     host: 'localhost',
-    user: 'root', //usuario
-    password: 'servidor', //constraseña
-    database: 'gestion_vacaciones' // Cambia esto por tu base de datos
+    user: 'root',
+    password: 'servidor',
+    database: 'gestion_vacaciones'
 });
 
 db.connect(err => {
@@ -54,22 +39,43 @@ app.post('/api/verify-employee', (req, res) => {
 
 // Registrar nuevo usuario (empleado)
 app.post('/api/register-user', (req, res) => {
-    const { email, password } = req.body;
+    const { email, password, dni } = req.body;
 
-    // Encriptar la contraseña
-    const hashedPassword = bcrypt.hashSync(password, 10);
+    // Primero, buscar el empleado en la tabla empleados usando el DNI
+    const findEmpleadoQuery = 'SELECT id FROM empleados WHERE dni = ?';
 
-    // Aquí iría la lógica para insertar el nuevo usuario en la base de datos de usuarios
-    const query = 'INSERT INTO usuarios (email, password) VALUES (?, ?)';
-    db.query(query, [email, hashedPassword], (err, results) => {
+    db.query(findEmpleadoQuery, [dni], (err, results) => {
         if (err) {
-            console.error('Error al insertar en la base de datos:', err);
-            return res.json({ success: false, message: 'Error al registrar el usuario.' });
+            console.error('Error al buscar el empleado:', err);
+            return res.json({ success: false, message: 'Error al buscar el empleado.' });
         }
-        res.json({ success: true });
+
+        // Verificar si se encontró el empleado
+        if (results.length === 0) {
+            console.error('Empleado no encontrado con ese DNI:', dni);
+            return res.json({ success: false, message: 'Empleado no encontrado.' });
+        }
+
+        // Obtener el id del empleado
+        const empleado_id = results[0].id; 
+        console.log('Empleado ID encontrado:', empleado_id);
+
+        // Encriptar la contraseña
+        const hashedPassword = bcrypt.hashSync(password, 10);
+
+        // Insertar el nuevo usuario con el empleado_id en la tabla usuarios
+        const insertUsuarioQuery = 'INSERT INTO usuarios (empleado_id, email, password) VALUES (?, ?, ?)';
+
+        db.query(insertUsuarioQuery, [empleado_id, email, hashedPassword], (err, results) => {
+            if (err) {
+                console.error('Error al insertar en la base de datos:', err);
+                return res.json({ success: false, message: 'Error al registrar el usuario.' });
+            }
+
+            res.json({ success: true, message: 'Usuario registrado exitosamente.' });
+        });
     });
 });
-
 
 // Iniciar el servidor
 app.listen(port, () => {
