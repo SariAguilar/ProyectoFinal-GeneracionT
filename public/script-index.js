@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const registerBtn = document.getElementById('registerBtn');
 
     if (loginBtn && registerBtn) {
+        
         loginBtn.onclick = function() {
             // Redirigir a la página de opciones de login
             window.location.href = '/login-options'; // Ruta sin .html
