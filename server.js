@@ -13,7 +13,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Configuración de sesiones
 app.use(session({
-    secret: 's3kr3t0#CULT°', // Cambia esto por una cadena secreta y única
+    secret: 's3kr3t0#CULT°', 
     resave: false,
     saveUninitialized: true
 }));
@@ -93,12 +93,12 @@ app.post('/api/register-user', (req, res) => {
 
 // Servir la página de opciones de login
 app.get('/login-options', (req, res) => {
-    res.sendFile(path.join(__dirname, 'views', 'login-options.html')); // Asegúrate de que el archivo exista
+    res.sendFile(path.join(__dirname, 'views', 'login-options.html')); 
 });
 
 // Servir la página de registro
 app.get('/registrar', (req, res) => {
-    res.sendFile(path.join(__dirname, 'views', 'registrar.html')); // Asegúrate de que el archivo exista
+    res.sendFile(path.join(__dirname, 'views', 'registrar.html')); 
 });
 
 // Iniciar el servidor
