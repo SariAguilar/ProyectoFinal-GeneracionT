@@ -1,3 +1,4 @@
+/* Estilo general del cuerpo */
 body {
     font-family: 'Arial', sans-serif;
     margin: 0;
@@ -5,6 +6,7 @@ body {
     background-color: #f6f0ca; /* Color de fondo */
 }
 
+/* Estilo para el encabezado */
 header {
     background: #42B391; /* Color del encabezado */
     color: #fff;
@@ -13,6 +15,7 @@ header {
     border-bottom: 4px solid #ffffff; /* Línea inferior del encabezado */
 }
 
+/* Estilo para el contenido principal */
 main {
     max-width: 600px;
     margin: 20px auto;
@@ -22,16 +25,19 @@ main {
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
 }
 
+/* Estilo para los títulos principales */
 h2 {
     color: #33CA7F; /* Color de los encabezados */
     text-align: center;
 }
 
+/* Estilo para los párrafos */
 p {
     text-align: center;
     font-size: 1.1rem;
 }
 
+/* Estilo para los botones */
 button {
     padding: 10px;
     background: #7DCFB6; /* Color de fondo del botón */
@@ -47,13 +53,15 @@ button {
 button:hover {
     background: #FC9F5B; /* Color de fondo al pasar el ratón */
 }
+
+/* Estilo para el enlace de "Volver al inicio" */
 #inicio {
     display: block; /* Para que ocupe toda la línea */
     text-align: center; /* Centra el texto */
     margin-top: 15px; /* Espaciado superior */
     color: #ffffff; /* Color azul por defecto */
     text-decoration: none; /* Sin subrayado */
-    font-weight:lighter; /* Negrita */
+    font-weight: lighter; /* Fuente ligera */
     background-color: #f8b262;
 }
 
@@ -63,10 +71,36 @@ button:hover {
     background-color: #FC9F5B;
 }
 
+/* Estilo para el pie de página */
 footer {
     text-align: center;
     margin-top: 20px;
     padding: 10px 0;
     color: #333;
     border-radius: 0 0 10px 10px; /* Esquinas redondeadas en la parte inferior */
+}
+
+/* Estilo para los contenedores de formularios */
+.form-group {
+    margin-bottom: 15px;
+}
+
+/* Estilo para los campos de entrada */
+input[type="text"], 
+input[type="email"], 
+input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+/* Estilo para el mensaje de error */
+#error-message {
+    color: red;
+    display: none;
+    font-size: 0.9rem;
+    margin-top: 10px;
 }
