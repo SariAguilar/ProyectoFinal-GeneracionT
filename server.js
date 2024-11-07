@@ -15,7 +15,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Configuración de sesiones
 app.use(session({
-    secret: 's3kr3t0#CULT°',
+    secret: 's3kr3t0#CULT°', 
     resave: false,
     saveUninitialized: true,
     cookie: { secure: false, maxAge: 60000 } // Agregar maxAge para duración de la sesión
@@ -187,46 +187,6 @@ app.get('/login-options', (req, res) => {
 
 app.get('/registrar', (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'registrar.html'));
-});
-
-// Ruta para acceder a 'login-empleado.html' desde 'views'
-app.get('/login-empleado', (req, res) => {
-    res.sendFile(path.join(__dirname, 'views', 'login-empleado.html'));
-});
-
-// Ruta para mostrar la página después de iniciar sesión
-app.get('/inicio-empleado', (req, res) => {
-    res.sendFile(path.join(__dirname, 'views', 'inicio-empleado.html'));
-});
-
-// Gestionar solicitudes pendientes (aprobadas o rechazadas)
-app.post('/api/gestionar-solicitud', (req, res) => {
-    const { solicitud_id, estado } = req.body;
-
-    const query = 'UPDATE solicitudes_vacaciones SET estado = ? WHERE id = ?';
-
-    db.query(query, [estado, solicitud_id], (err, results) => {
-        if (err) {
-            console.error('Error al gestionar la solicitud:', err);
-            return res.status(500).json({ success: false, message: 'Error al gestionar la solicitud.' });
-        }
-
-        res.json({ success: true, message: 'Solicitud gestionada con éxito.' });
-    });
-});
-
-// Obtener solicitudes pendientes para RRHH
-app.get('/api/solicitudes-pendientes', (req, res) => {
-    const query = 'SELECT * FROM solicitudes_vacaciones WHERE estado = "pendiente"';
-
-    db.query(query, (err, results) => {
-        if (err) {
-            console.error('Error al obtener solicitudes pendientes:', err);
-            return res.status(500).json({ success: false, message: 'Error al obtener solicitudes pendientes.' });
-        }
-
-        res.json({ success: true, solicitudes: results });
-    });
 });
 
 // Iniciar el servidor
