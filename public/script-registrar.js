@@ -3,6 +3,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const verificationMessage = document.getElementById('verificationMessage');
     const emailPasswordSection = document.getElementById('emailPasswordSection');
 
+    let globalDni; // Variable global para almacenar el DNI
+
     if (registrationForm) {
         registrationForm.onsubmit = async function(event) {
             event.preventDefault(); // Evitar el envío del formulario
@@ -12,6 +14,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const lastName = document.getElementById('lastName').value;
             const dni = document.getElementById('dni').value;
             const birthDate = document.getElementById('birthDate').value;
+
+            console.log('DNI recibido:', dni); // Verifica el valor del DNI
+            globalDni = dni; // Guardar el DNI en la variable global
 
             // Verificar empleado en la base de datos
             const response = await fetch('/api/verify-employee', {
@@ -44,13 +49,13 @@ document.addEventListener('DOMContentLoaded', function() {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
 
-            // Registrar al empleado
+            // Registrar al empleado usando el DNI almacenado
             const response = await fetch('/api/register-user', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ email, password, dni })
+                body: JSON.stringify({ email, password, dni: globalDni }) // Usa globalDni aquí
             });
 
             const result = await response.json();

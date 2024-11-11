@@ -3,30 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inicio de Sesión - Empleado</title>
-    <link rel="stylesheet" href="styles.css"> <!-- Aquí puedes agregar tu archivo CSS -->
+    <link rel="stylesheet" href="/styles.css"> <!-- Sin la ruta /public -->
+
+    <title>Login</title>
+
+    <script>
+        async function loginEmpleado(event) {
+            event.preventDefault(); // Evitar que el formulario recargue la página
+            const dni = document.getElementById('dni').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            const response = await fetch('/api/login-empleado', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ dni, email, password })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                // Si el inicio de sesión fue exitoso, redirigimos al usuario
+                window.location.href = '/inicio-empleado'; 
+            } else {
+                alert('Credenciales incorrectas o empleado no encontrado');
+            }
+        }
+    </script>
 </head>
 <body>
-    <div class="login-container">
-        <h2>Login Empleado</h2>
-        <form id="loginForm">
-            <div class="form-group">
-                <label for="dni">DNI:</label>
-                <input type="text" id="dni" name="dni" required placeholder="Ingrese su DNI">
-            </div>
-            <div class="form-group">
-                <label for="email">Correo electrónico:</label>
-                <input type="email" id="email" name="email" required placeholder="Ingrese su correo electrónico">
-            </div>
-            <div class="form-group">
-                <label for="password">Contraseña:</label>
-                <input type="password" id="password" name="password" required placeholder="Ingrese su contraseña">
-            </div>
-            <button type="submit">Iniciar sesión</button>
-        </form>
-        <p id="error-message" style="color: red; display: none;">Credenciales incorrectas. Intente nuevamente.</p>
-    </div>
+    <h2>Iniciar sesión</h2>
+    <form onsubmit="loginEmpleado(event)">
+        <label for="dni">DNI:</label><br>
+        <input type="text" id="dni" required><br><br>
 
-    <script src="script.js"></script> <!-- Archivo JavaScript aquí -->
+        <label for="email">Email:</label><br>
+        <input type="email" id="email" required><br><br>
+
+        <label for="password">Contraseña:</label><br>
+        <input type="password" id="password" required><br><br>
+
+        <input type="submit" value="Iniciar sesión">
+    </form>
 </body>
 </html>

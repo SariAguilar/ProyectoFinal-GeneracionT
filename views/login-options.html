@@ -15,15 +15,27 @@
     <main>
         <section id="options">
             <h2>Seleccione el tipo de usuario</h2>
-            <button id="buttonRRHH">RRHH</button>
-            <button id="buttonEmpleado">Empleado</button>
-            <button id="inicio" onclick="window.location.href='index.html'">Inicio</button>
+            <button id="RRHHBtn">RRHH</button>
+            <button id="empleadoBtn"> Empleado</button>
+            <button id= "inicioBtn">Inicio</button>
         </section>
     </main>
     
     <footer>
         <p>&copy; 2024 Gestión de Vacaciones</p>
     </footer>
-    <script src="/script-login-options.js"></script> <!-- Vincula archivo JavaScript -->
+
+    <script>  
+        document.getElementById("RRHHBtn").addEventListener("click", function(){
+            window.location.href = "/login-RRHH"; });
+
+        document.getElementById("empleadoBtn").addEventListener("click", function(){
+            window.location.href = "/login-empleado"; });
+            
+        document.getElementById("inicioBtn").addEventListener("click", function(){
+            window.location.href = "index.html"; });
+        
+     </script> 
+
 </body>
 </html>

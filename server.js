@@ -37,28 +37,78 @@ db.connect(err => {
     console.log('Conectado a la base de datos MySQL');
 });
 
+// En tu archivo server.js
+app.post('/api/login', (req, res) => {
+    const { dni, email, password } = req.body;
+
+    // Consultar la base de datos para verificar las credenciales
+    db.query('SELECT * FROM usuarios WHERE dni = ? AND email = ?', [dni, email], (err, results) => {
+        if (err) {
+            console.error('Error al verificar las credenciales:', err);
+            res.status(500).json({ success: false });
+        } else {
+            if (results.length === 1) {
+                const user = results[0];
+                // Comparar la contraseña ingresada con la almacenada en la base de datos
+                bcrypt.compare(password, user.password, (err, isMatch) => {
+                    if (err) {
+                        console.error('Error al comparar contraseñas:', err);
+                        res.status(500).json({ success: false });
+                    } else if (isMatch) {
+                        // Crear una sesión para el usuario
+                        req.session.userId = user.id;
+                        res.json({ success: true });
+                    } else {
+                        res.json({ success: false });
+                    }
+                });
+            } else {
+                res.json({ success: false });
+            }
+        }
+    });
+});
+
 // Verificar empleado en la base de datos (automáticamente usando el DNI)
 app.post('/api/verify-employee', (req, res) => {
-    const { dni } = req.body;
+    const { firstName, lastName, dni, birthDate } = req.body;
+    console.log('Datos recibidos en el backend:', { firstName, lastName, dni, birthDate });
 
-    if (!dni) {
-        return res.status(400).json({ success: false, message: 'DNI no puede estar vacío.' });
-    }
-
-    const query = 'SELECT * FROM empleados WHERE dni = ?';
-
-    db.query(query, [dni], (err, results) => {
+    // Consulta SQL
+    const query = 'SELECT id FROM empleados WHERE dni = ?';
+    db.query(query, [dni], (err, result) => {
         if (err) {
-            console.error('Error al verificar el empleado:', err);
-            return res.status(500).json({ success: false, message: 'Error al verificar el empleado.' });
+            console.error('Error al buscar el empleado:', err);
+            return res.status(500).json({ error: 'Error al buscar el empleado' });
         }
-        res.json({ success: true, exists: results.length > 0 });
+    
+        if (result.length > 0) {
+            res.json({ exists: true });
+        } else {
+            res.json({ exists: false });
+        }
+    });
+    
+});
+app.get('/api/obtener-perfil', (req, res) => {
+    // Obtener el ID del empleado desde la sesión
+    const empleadoId = req.session.empleadoId;
+
+    // Consultar la base de datos para obtener los datos del empleado
+    db.query('SELECT * FROM empleados WHERE id = ?', [empleadoId], (err, results) => {
+        if (err) {
+            // Manejar el error
+        } else {
+            res.json(results[0]);
+        }
     });
 });
 
 // Registrar nuevo usuario (empleado)
 app.post('/api/register-user', (req, res) => {
     const { email, password, dni } = req.body;
+
+    console.log('DNI recibido:', dni);  // Verifica el valor del DNI
 
     if (!dni || !email || !password) {
         return res.status(400).json({ success: false, message: 'DNI, correo y contraseña son obligatorios.' });
@@ -92,6 +142,8 @@ app.post('/api/register-user', (req, res) => {
                     console.error('Error al insertar en la base de datos:', err);
                     return res.status(500).json({ success: false, message: 'Error al registrar el usuario.' });
                 }
+
+
 
                 res.json({ success: true, message: 'Usuario registrado exitosamente.' });
             });
@@ -187,6 +239,22 @@ app.get('/login-options', (req, res) => {
 
 app.get('/registrar', (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'registrar.html'));
+});
+
+app.get('/login-empleado', (req, res) => {
+    res.sendFile(path.join(__dirname, 'views', 'login-empleado.html'));
+});
+
+app.get('/login-RRHH', (req, res) => {
+    res.sendFile(path.join(__dirname, 'views', 'login-RRHH.html'));
+});
+
+app.get('/inicio-empleado', (req, res) => {
+    if (req.session.user) {
+        res.sendFile(path.join(__dirname,'views', 'inicio-empleado.html')); 
+    } else {
+        res.redirect('/'); // Si no está logueado, redirige a la página de login
+    }
 });
 
 // Iniciar el servidor

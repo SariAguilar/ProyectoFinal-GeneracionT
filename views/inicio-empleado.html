@@ -3,28 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bienvenido - Plataforma de Gestión de Vacaciones</title>
-    <link rel="stylesheet" href="/public/styles.css"> <!-- Vincula el CSS -->
+    <title>Panel de Empleado</title>
+    <link rel="stylesheet" href="/public/styles.css">
 </head>
 <body>
-    <header>
-        <h1>Bienvenido a la Plataforma de Gestión de Vacaciones</h1>
-    </header>
-    
-    <main>
-        <section id="main-content">
-            <h2>Hola, [Nombre del Empleado]</h2> <!-- Puedes personalizar este saludo -->
-            <p>¿Listo para solicitar tus vacaciones?</p>
+    <h1>¡Bienvenido, [Nombre del empleado]!</h1>
+    <nav>
+        <ul>
+            <li><a href="#">Mi perfil</a></li>
+            <li><a href="#">Historial de solicitudes</a></li>
+            <li><a href="#">Solicitar vacaciones</a></li>
+            <li><a href="#">Cerrar sesión</a></li>
+        </ul>
+    </nav>
 
-            <button id="solicitarVacaciones" onclick="window.location.href='/solicitar-vacaciones'">Solicitar Vacaciones</button>
-            <button id="cerrarSesion" onclick="window.location.href='/login-options'">Cerrar Sesión</button>
-        </section>
-    </main>
-    
-    <footer>
-        <p>&copy; 2024 Gestión de Vacaciones</p>
-    </footer>
-    
-    <script src="/script-login-options.js"></script> <!-- Vincula JavaScript si es necesario -->
+    <div id="contenido">
+        </div>
+
+    <script src="script-empleado.js"></script>
 </body>
 </html>
