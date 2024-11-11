@@ -10,16 +10,15 @@
     <script>
         async function loginEmpleado(event) {
             event.preventDefault(); // Evitar que el formulario recargue la página
-            const dni = document.getElementById('dni').value;
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
 
-            const response = await fetch('/api/login-empleado', {
+            const response = await fetch('/api/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ dni, email, password })
+                body: JSON.stringify({ email, password })
             });
 
             const data = await response.json();
@@ -36,8 +35,6 @@
 <body>
     <h2>Iniciar sesión</h2>
     <form onsubmit="loginEmpleado(event)">
-        <label for="dni">DNI:</label><br>
-        <input type="text" id="dni" required><br><br>
 
         <label for="email">Email:</label><br>
         <input type="email" id="email" required><br><br>

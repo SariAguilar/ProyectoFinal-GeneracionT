@@ -37,12 +37,13 @@ db.connect(err => {
     console.log('Conectado a la base de datos MySQL');
 });
 
-// En tu archivo server.js
+// Ruta de inicio de sesión
 app.post('/api/login', (req, res) => {
-    const { dni, email, password } = req.body;
+    console.log('Datos recibidos en /api/login:', req.body); // Esta línea imprime los datos recibidos
+    const { email, password } = req.body; 
 
-    // Consultar la base de datos para verificar las credenciales
-    db.query('SELECT * FROM usuarios WHERE dni = ? AND email = ?', [dni, email], (err, results) => {
+    // Consultar la base de datos para verificar las credenciales solo con email y password
+    db.query('SELECT * FROM usuarios WHERE email = ?', [email], (err, results) => {
         if (err) {
             console.error('Error al verificar las credenciales:', err);
             res.status(500).json({ success: false });
@@ -59,11 +60,11 @@ app.post('/api/login', (req, res) => {
                         req.session.userId = user.id;
                         res.json({ success: true });
                     } else {
-                        res.json({ success: false });
+                        res.json({ success: false, message: "Contraseña incorrecta" });
                     }
                 });
             } else {
-                res.json({ success: false });
+                res.json({ success: false, message: "Usuario no encontrado" });
             }
         }
     });
@@ -250,12 +251,13 @@ app.get('/login-RRHH', (req, res) => {
 });
 
 app.get('/inicio-empleado', (req, res) => {
-    if (req.session.user) {
-        res.sendFile(path.join(__dirname,'views', 'inicio-empleado.html')); 
+    if (req.session.userId) {  // Cambia 'req.session.user' por 'req.session.userId'
+        res.sendFile(path.join(__dirname, 'views', 'inicio-empleado.html'));
     } else {
-        res.redirect('/'); // Si no está logueado, redirige a la página de login
+        res.redirect('/login-empleado');  // Redirige a la página de login si no está autenticado
     }
 });
+
 
 // Iniciar el servidor
 app.listen(port, () => {
