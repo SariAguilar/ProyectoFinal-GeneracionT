@@ -57,10 +57,10 @@ VALUES
 ('Sara Luz', 'Aguilar Mariaca', '47429971', '2024-08-22', '2024-04-10');
 
 
-INSERT INTO usuarios (empleado_id, email, password)
-VALUES 
-(1, 'juan.perez@example.com', '$2b$10$somethingEncryptedHere1'), -- Contraseña encriptada para "juan.perez"),
-(2, 'maria.gonzalez@example.com', '$2b$10$somethingEncryptedHere2'); -- Contraseña encriptada para "maria.gonzalez");
+<--INSERT INTO usuarios (empleado_id, email, password)
+<--VALUES 
+<--(1, 'juan.perez@example.com', '$2b$10$somethingEncryptedHere1'), -- Contraseña encriptada para "juan.perez"),
+<--(2, 'maria.gonzalez@example.com', '$2b$10$somethingEncryptedHere2'); -- Contraseña encriptada para "maria.gonzalez");
 
 INSERT INTO asistencias (id_empleado, fecha, estado)
 VALUES 

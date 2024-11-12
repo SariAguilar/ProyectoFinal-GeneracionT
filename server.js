@@ -72,6 +72,79 @@ app.post('/api/login', (req, res) => {
     });
 });
 
+
+// Ruta para iniciar sesión como RRHH
+app.post('/login-rrhh', (req, res) => {
+    const { email, password } = req.body;
+
+    // Buscar el usuario en la tabla usuarios_admin
+    const query = 'SELECT * FROM usuarios_admin WHERE email = ?';
+    db.query(query, [email], (err, results) => {
+        if (err) {
+            console.error("Error al consultar la base de datos:", err);
+            return res.status(500).json({ message: "Error interno del servidor" });
+        }
+
+        if (results.length === 0) {
+            return res.status(401).json({ message: "Correo no registrado" });
+        }
+
+        const usuario = results[0];
+
+        // Comparar la contraseña
+        bcrypt.compare(password, usuario.password, (err, isMatch) => {
+            if (err) throw err;
+
+            if (isMatch) {
+                // Si la contraseña es correcta, iniciar sesión
+                req.session.usuarioId = usuario.id;
+                return res.json({ message: "Autenticación exitosa", redirect: '/inicio-admin.html' });
+            } else {
+                return res.status(401).json({ message: "Contraseña incorrecta" });
+            }
+        });
+    });
+});
+
+// Obtener todas las solicitudes pendientes
+app.get('/api/solicitudes', (req, res) => {
+    const query = 'SELECT * FROM solicitudes WHERE estado = "pendiente"';
+    db.query(query, (err, results) => {
+        if (err) {
+            console.error("Error al obtener las solicitudes:", err);
+            return res.status(500).json({ message: "Error al obtener las solicitudes" });
+        }
+        res.json(results);
+    });
+});
+
+// Aceptar una solicitud
+app.post('/api/solicitudes/:id/aceptar', (req, res) => {
+    const { id } = req.params;
+    const query = 'UPDATE solicitudes SET estado = "aceptada" WHERE id = ?';
+    db.query(query, [id], (err, result) => {
+        if (err) {
+            console.error("Error al aceptar la solicitud:", err);
+            return res.status(500).json({ message: "Error al aceptar la solicitud" });
+        }
+        res.json({ message: 'Solicitud aceptada' });
+    });
+});
+
+// Denegar una solicitud
+app.post('/api/solicitudes/:id/denegar', (req, res) => {
+    const { id } = req.params;
+    const query = 'UPDATE solicitudes SET estado = "denegada" WHERE id = ?';
+    db.query(query, [id], (err, result) => {
+        if (err) {
+            console.error("Error al denegar la solicitud:", err);
+            return res.status(500).json({ message: "Error al denegar la solicitud" });
+        }
+        res.json({ message: 'Solicitud denegada' });
+    });
+});
+
+
 //Cerrar Sesión
 app.post('/api/logout', (req, res) => {
     req.session.destroy(error => {
@@ -105,10 +178,6 @@ app.get('/api/mi-perfil', (req, res) => {
         }
     });
 });
-
-
-
-
 // Verificar empleado en la base de datos (automáticamente usando el DNI)
 app.post('/api/verify-employee', (req, res) => {
     const { firstName, lastName, dni, birthDate } = req.body;
@@ -281,22 +350,72 @@ app.post('/api/solicitar-vacaciones', (req, res) => {
 });
 
 
+//historial de solicitudes
+app.get('/api/solicitudes-vacaciones', (req, res) => {
+    const empleadoId = req.session.userId;
 
-// Mostrar historial de vacaciones
-app.post('/api/historial-vacaciones', (req, res) => {
-    const { idEmpleado } = req.body;
-
-    const query = 'SELECT * FROM historial_vacaciones WHERE id_empleado = ?';
-
-    db.query(query, [idEmpleado], (err, results) => {
-        if (err) {
-            console.error('Error al obtener el historial de vacaciones:', err);
-            return res.status(500).json({ success: false, message: 'Error al obtener el historial de vacaciones.' });
+    db.query(
+        'SELECT fecha_inicio, fecha_fin, estado, observaciones FROM solicitudes_vacaciones WHERE empleado_id = ? ORDER BY fecha_inicio DESC',
+        [empleadoId],
+        (error, results) => {
+            if (error) {
+                console.error(error);
+                res.status(500).json({ success: false, message: 'Error al obtener el historial de solicitudes de vacaciones' });
+            } else {
+                res.json({ success: true, solicitudes: results });
+            }
         }
-
-        res.json({ success: true, historial: results });
-    });
+    );
 });
+
+
+app.get('/api/solicitudes-pendientes', (req, res) => {
+    // Verifica si el usuario tiene permisos de administrador (RRHH)
+    if (req.session.userRole !== 'admin') {
+        return res.status(403).json({ success: false, message: 'Acceso denegado' });
+    }
+
+    // Selecciona las solicitudes con estado "pendiente"
+    db.query(
+        'SELECT s.id, s.fecha_inicio, s.fecha_fin, s.estado, s.observaciones, e.nombre, e.apellido ' +
+        'FROM solicitudes_vacaciones s JOIN empleados e ON s.empleado_id = e.id WHERE s.estado = "pendiente"',
+        (error, results) => {
+            if (error) {
+                console.error(error);
+                res.status(500).json({ success: false, message: 'Error al obtener solicitudes' });
+            } else {
+                res.json({ success: true, solicitudes: results });
+            }
+        }
+    );
+});
+
+
+app.post('/api/gestionar-solicitud', (req, res) => {
+    const { id, estado } = req.body;
+
+    // Verifica si el usuario tiene permisos de administrador (RRHH)
+    if (req.session.userRole !== 'admin') {
+        return res.status(403).json({ success: false, message: 'Acceso denegado' });
+    }
+
+    // Actualiza el estado de la solicitud en la base de datos
+    db.query(
+        'UPDATE solicitudes_vacaciones SET estado = ? WHERE id = ?',
+        [estado, id],
+        (error, results) => {
+            if (error) {
+                console.error(error);
+                res.status(500).json({ success: false, message: 'Error al actualizar solicitud' });
+            } else if (results.affectedRows === 0) {
+                res.status(404).json({ success: false, message: 'Solicitud no encontrada' });
+            } else {
+                res.json({ success: true, message: 'Solicitud actualizada correctamente' });
+            }
+        }
+    );
+});
+
 
 // Rutas para servir las páginas de login y registro
 app.get('/login-options', (req, res) => {

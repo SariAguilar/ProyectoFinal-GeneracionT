@@ -19,7 +19,7 @@ document.querySelectorAll('nav a').forEach(link => {
         if (href === '#mi-perfil') {
             cargarPerfil();
         } else if (href === '#historial-solicitudes') {
-            cargarHistorial();
+            cargarHistorialSolicitudes();
         } else if (href === '#solicitar-vacaciones') {
             cargarFormularioSolicitud();
         } else if (href === '#cerrar-sesion') {
@@ -56,24 +56,55 @@ function cargarPerfil() {
 }
 
 
-function cargarHistorial() {
-    fetch('/api/historial-vacaciones')
-        .then(response => response.json())
-        .then(data => {
-            let historialHTML = '<h2>Historial de Vacaciones</h2>';
-            data.solicitudes.forEach(solicitud => {
-                historialHTML += `
-                    <div>
-                        <p>Fecha de inicio: ${solicitud.fecha_inicio}</p>
-                        <p>Fecha de fin: ${solicitud.fecha_fin}</p>
-                        <p>Estado: ${solicitud.estado}</p>
-                    </div>
-                `;
+    function cargarHistorialSolicitudes() {
+        console.log("Cargando historial de solicitudes de vacaciones...");
+        
+        fetch('/api/solicitudes-vacaciones')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log("Historial de solicitudes recibido:", data.solicitudes);
+    
+                    if (data.solicitudes.length === 0) {
+                        contenido.innerHTML = '<p>No tienes solicitudes de vacaciones registradas.</p>';
+                    } else {
+                        let solicitudesHTML = '<h2>Historial de Solicitudes de Vacaciones</h2><ul>';
+                        
+                        data.solicitudes.forEach(solicitud => {
+                            let estadoClass = '';
+                            if (solicitud.estado === 'aprobada') {
+                                estadoClass = 'estado-aprobado';
+                            } else if (solicitud.estado === 'rechazada') {
+                                estadoClass = 'estado-rechazado';
+                            } else {
+                                estadoClass = 'estado-pendiente';
+                            }
+                        
+                            solicitudesHTML += `
+                                <li>
+                                    <p><strong>Fecha de inicio:</strong> ${solicitud.fecha_inicio}</p>
+                                    <p><strong>Fecha de fin:</strong> ${solicitud.fecha_fin}</p>
+                                    <p><strong>Estado:</strong> <span class="${estadoClass}">${solicitud.estado}</span></p>
+                                    <p><strong>Observaciones:</strong> ${solicitud.observaciones || 'Ninguna'}</p>
+                                </li>
+                            `;
+                        });
+                        
+    
+                        solicitudesHTML += '</ul>';
+                        contenido.innerHTML = solicitudesHTML;
+                    }
+                } else {
+                    console.log("Error al cargar el historial de solicitudes de vacaciones:", data.message);
+                    contenido.innerHTML = '<p>Error al cargar el historial de solicitudes de vacaciones.</p>';
+                }
+            })
+            .catch(error => {
+                console.error('Error al cargar el historial de solicitudes de vacaciones:', error);
+                contenido.innerHTML = '<p>Error al cargar el historial de solicitudes de vacaciones.</p>';
             });
-            contenido.innerHTML = historialHTML;
-        })
-        .catch(error => console.error('Error al obtener el historial de vacaciones:', error));
-}
+    }
+    
 
 function cargarFormularioSolicitud() {
     contenido.innerHTML = `
@@ -124,7 +155,6 @@ function cargarFormularioSolicitud() {
     });
 }
 ;
-
         fetch('/api/solicitar-vacaciones', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },

@@ -123,3 +123,17 @@ input[type="password"] {
     font-size: 0.9rem;
     margin-top: 10px;
 }
+.estado-aprobado {
+    color: green;
+    font-weight: bold;
+}
+
+.estado-rechazado {
+    color: red;
+    font-weight: bold;
+}
+
+.estado-pendiente {
+    color: gray;
+    font-weight: bold;
+}
