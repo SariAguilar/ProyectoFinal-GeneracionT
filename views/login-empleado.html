@@ -25,7 +25,7 @@
 
             if (data.success) {
                 // Si el inicio de sesión fue exitoso, redirigimos al usuario
-                window.location.href = '/inicio-empleado'; 
+                window.location.href = `/inicio-empleado?name=${encodeURIComponent(data.nombre)}`; 
             } else {
                 alert('Credenciales incorrectas o empleado no encontrado');
             }
@@ -33,6 +33,7 @@
     </script>
 </head>
 <body>
+
     <h2>Iniciar sesión</h2>
     <form onsubmit="loginEmpleado(event)">
 

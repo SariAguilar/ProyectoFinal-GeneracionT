@@ -56,9 +56,9 @@ app.post('/api/login', (req, res) => {
                         console.error('Error al comparar contraseñas:', err);
                         res.status(500).json({ success: false });
                     } else if (isMatch) {
-                        // Crear una sesión para el usuario
+                        // Crear una sesión para el usuario y devolver nombre
                         req.session.userId = user.id;
-                        res.json({ success: true });
+                        res.json({ success: true, nombre: user.nombre});
                     } else {
                         res.json({ success: false, message: "Contraseña incorrecta" });
                     }
@@ -69,6 +69,19 @@ app.post('/api/login', (req, res) => {
         }
     });
 });
+
+//Cerrar Sesión
+app.post('/api/logout', (req, res) => {
+    req.session.destroy(err => {
+        if (err) {
+            console.error('Error al cerrar sesión:', err);
+            return res.status(500).json({ success: false });
+        }
+        res.json({ success: true });
+    });
+});
+
+
 
 // Verificar empleado en la base de datos (automáticamente usando el DNI)
 app.post('/api/verify-employee', (req, res) => {
@@ -92,15 +105,22 @@ app.post('/api/verify-employee', (req, res) => {
     
 });
 app.get('/api/obtener-perfil', (req, res) => {
-    // Obtener el ID del empleado desde la sesión
     const empleadoId = req.session.empleadoId;
 
-    // Consultar la base de datos para obtener los datos del empleado
-    db.query('SELECT * FROM empleados WHERE id = ?', [empleadoId], (err, results) => {
-        if (err) {
-            // Manejar el error
+    if (!empleadoId) {
+        return res.status(401).json({ error: 'No autorizado' });
+    }
+
+    connection.query('SELECT nombre FROM empleados WHERE id = ?', [empleadoId], (error, results) => {
+        if (error) {
+            console.error('Error en la consulta:', error);
+            return res.status(500).json({ error: 'Error en el servidor' });
+        }
+        if (results.length > 0) {
+            const nombre = results[0].nombre;
+            res.json({ nombre });
         } else {
-            res.json(results[0]);
+            res.status(404).json({ error: 'Empleado no encontrado' });
         }
     });
 });
@@ -216,6 +236,27 @@ app.post('/api/puede-pedir-vacaciones', (req, res) => {
         res.json({ success: true, message: 'Puede pedir vacaciones.' });
     });
 });
+
+app.post('/api/solicitar-vacaciones', (req, res) => {
+    const { fechaInicio, fechaFin, observaciones } = req.body;
+
+    // Validar los datos
+    // ...
+
+    // Guardar los datos en la base de datos
+    db.query('INSERT INTO solicitudes_vacaciones (empleado_id, fecha_inicio, fecha_fin, observaciones) VALUES (?, ?, ?, ?)',
+        [req.session.userId, fechaInicio, fechaFin, observaciones],
+        (error, results) => {
+            if (error) {
+                console.error(error);
+                res.status(500).json({ success: false, message: 'Error al guardar la solicitud' });
+            } else {
+                res.json({ success: true, message: 'Solicitud enviada correctamente' });
+            }
+        }
+    );
+});
+
 
 // Mostrar historial de vacaciones
 app.post('/api/historial-vacaciones', (req, res) => {
