@@ -12,6 +12,8 @@ const port = 3000;
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true })); // Habilita URL-encoded para datos enviados por formularios
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.json());
+
 
 // Configuración de sesiones
 app.use(session({
@@ -72,14 +74,38 @@ app.post('/api/login', (req, res) => {
 
 //Cerrar Sesión
 app.post('/api/logout', (req, res) => {
-    req.session.destroy(err => {
-        if (err) {
-            console.error('Error al cerrar sesión:', err);
-            return res.status(500).json({ success: false });
+    req.session.destroy(error => {
+        if (error) {
+            console.error('Error al cerrar sesión:', error);
+            res.status(500).send('Error al cerrar sesión');
+        } else {
+            res.sendStatus(200);
         }
-        res.json({ success: true });
     });
 });
+
+
+app.get('/api/mi-perfil', (req, res) => {
+    const usuarioId = req.session.userId;  // Supone que el ID del usuario está almacenado en la sesión
+
+    db.query(`
+        SELECT e.nombre, e.apellido, e.dni, e.fecha_nacimiento, e.fecha_ingreso, e.rol, e.dias_vacaciones_acumulados, u.email 
+        FROM empleados AS e
+        JOIN usuarios AS u ON e.id = u.empleado_id
+        WHERE u.id = ?
+    `, [usuarioId], (error, results) => {
+        if (error) {
+            console.error('Error al obtener los datos del perfil:', error);
+            res.status(500).json({ success: false, message: 'Error al cargar el perfil' });
+        } else if (results.length > 0) {
+            const usuario = results[0];
+            res.json({ success: true, usuario });
+        } else {
+            res.json({ success: false, message: 'Usuario no encontrado' });
+        }
+    });
+});
+
 
 
 
@@ -239,23 +265,21 @@ app.post('/api/puede-pedir-vacaciones', (req, res) => {
 
 app.post('/api/solicitar-vacaciones', (req, res) => {
     const { fechaInicio, fechaFin, observaciones } = req.body;
+    const empleadoId = req.session.userId;
 
-    // Validar los datos
-    // ...
-
-    // Guardar los datos en la base de datos
-    db.query('INSERT INTO solicitudes_vacaciones (empleado_id, fecha_inicio, fecha_fin, observaciones) VALUES (?, ?, ?, ?)',
-        [req.session.userId, fechaInicio, fechaFin, observaciones],
-        (error, results) => {
-            if (error) {
-                console.error(error);
-                res.status(500).json({ success: false, message: 'Error al guardar la solicitud' });
-            } else {
-                res.json({ success: true, message: 'Solicitud enviada correctamente' });
-            }
+    db.query(`
+        INSERT INTO solicitudes_vacaciones (empleado_id, fecha_inicio, fecha_fin, estado, observaciones)
+        VALUES (?, ?, ?, 'pendiente', ?)
+    `, [empleadoId, fechaInicio, fechaFin, observaciones], (error, results) => {
+        if (error) {
+            console.error('Error al registrar la solicitud de vacaciones:', error);
+            res.status(500).json({ success: false, message: 'Error al registrar la solicitud' });
+        } else {
+            res.json({ success: true, message: 'Solicitud enviada correctamente' });
         }
-    );
+    });
 });
+
 
 
 // Mostrar historial de vacaciones

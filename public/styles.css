@@ -1,9 +1,12 @@
 /* Estilo general del cuerpo */
 body {
-    font-family: 'Arial', sans-serif;
+    font-family: 'Montserrat', sans-serif; /* Fuente moderna y legible */
     margin: 0;
     padding: 0;
-    background-color: #f6f0ca; /* Color de fondo */
+    background: linear-gradient(to bottom, #f6f0ca, #d2f3c8); /* Degradado suave para el fondo */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
 /* Estilo para el encabezado */
@@ -27,6 +30,7 @@ main {
 
 /* Estilo para los títulos principales */
 h2 {
+    font-size: 2rem;
     color: #33CA7F; /* Color de los encabezados */
     text-align: center;
 }
@@ -35,40 +39,55 @@ h2 {
 p {
     text-align: center;
     font-size: 1.1rem;
+    color: #333333c6;
 }
 
 /* Estilo para los botones */
+/* Estilo para los botones */
 button {
     padding: 10px;
-    background: #7DCFB6; /* Color de fondo del botón */
     color: #fff;
+    border-radius: 1px;
     border: none;
-    border-radius: 5px;
-    cursor: pointer;
     margin: 10px 0;
-    font-size: 1rem;
+    background: linear-gradient(to bottom, #7DCFB6, #42B391); /* Degradado en el botón */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); /* Sombra para darle profundidad */
+    transition: all 0.3s ease; /* Transición suave al pasar el ratón */
     width: 100%; /* Botones a full-width */
+
+
+
 }
 
 button:hover {
     background: #FC9F5B; /* Color de fondo al pasar el ratón */
+        transform: translateY(-3px); /* Levanta ligeramente el botón al pasar el ratón */
+    
+    
+
 }
 
+#registerBtn{
+    background: linear-gradient(to bottom, #f6f0ca, #d2f3c8);
+    color:#42B391 ;
+}
+
+
 /* Estilo para el enlace de "Volver al inicio" */
-#inicio {
-    display: block; /* Para que ocupe toda la línea */
+#inicioBtn {
     text-align: center; /* Centra el texto */
     margin-top: 15px; /* Espaciado superior */
     color: #ffffff; /* Color azul por defecto */
     text-decoration: none; /* Sin subrayado */
     font-weight: lighter; /* Fuente ligera */
-    background-color: #f8b262;
+    background-color:#FC9F5B;
+    border:none;
+    
 }
 
-#inicio:hover {
+#inicioBtn:hover {
     text-decoration: underline; /* Subrayar al pasar el mouse */
     color: #cad5d0; /* Cambia el color al pasar el mouse */
-    background-color: #FC9F5B;
 }
 
 /* Estilo para el pie de página */

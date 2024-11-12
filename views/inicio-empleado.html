@@ -3,25 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Empleado</title>
-    <link rel="stylesheet" href="/public/styles.css">
+    <title>Inicio Empleado</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1 id="welcomeMessage">¡Bienvenido!</h1>
+    <header>
+        <h1 id="welcomeMessage">¡Bienvenido!</h1>
+    </header>
 
     <nav>
         <ul>
-            <li><a href="#">Mi perfil</a></li>
-            <li><a href="#">Historial de solicitudes</a></li>
-            <button href="solicitar-vacaciones.html">Solicitar Vacaciones Sesión</button> <br>
-            <button onclick="cerrarSesion()">Cerrar Sesión</button>
+            <li><a href="#mi-perfil">Mi Perfil</a></li>
+            <li><a href="#historial-solicitudes">Historial de Vacaciones</a></li>
+            <li><a href="#solicitar-vacaciones">Solicitar Vacaciones</a></li>
+            <li><a href="#cerrar-sesion">Cerrar Sesión</a></li>
         </ul>
     </nav>
 
+    <!-- Contenedor para el contenido dinámico -->
     <div id="contenido">
-        </div>
+        <p>Seleccione una opción del menú para ver su contenido.</p>
+    </div>
 
-    <script src="script-empleado.js">
-    </script>
+    <!-- Enlace al script que maneja la navegación y las solicitudes -->
+    <script src="script-empleado.js"></script>
 </body>
 </html>
