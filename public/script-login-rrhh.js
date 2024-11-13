@@ -12,6 +12,7 @@ document.getElementById('login-rrhh-form').addEventListener('submit', function (
     })
     .then(response => response.json())
     .then(data => {
+        console.log(data);  
         if (data.redirect) {
             // Si la respuesta contiene una URL de redirección, hacer la redirección
             window.location.href = '/inicio-admin';

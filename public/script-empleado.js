@@ -56,54 +56,66 @@ function cargarPerfil() {
 }
 
 
-    function cargarHistorialSolicitudes() {
-        console.log("Cargando historial de solicitudes de vacaciones...");
-        
-        fetch('/api/solicitudes-vacaciones')
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    console.log("Historial de solicitudes recibido:", data.solicitudes);
-    
-                    if (data.solicitudes.length === 0) {
-                        contenido.innerHTML = '<p>No tienes solicitudes de vacaciones registradas.</p>';
-                    } else {
-                        let solicitudesHTML = '<h2>Historial de Solicitudes de Vacaciones</h2><ul>';
-                        
-                        data.solicitudes.forEach(solicitud => {
-                            let estadoClass = '';
-                            if (solicitud.estado === 'aprobada') {
-                                estadoClass = 'estado-aprobado';
-                            } else if (solicitud.estado === 'rechazada') {
-                                estadoClass = 'estado-rechazado';
-                            } else {
-                                estadoClass = 'estado-pendiente';
-                            }
-                        
-                            solicitudesHTML += `
-                                <li>
-                                    <p><strong>Fecha de inicio:</strong> ${solicitud.fecha_inicio}</p>
-                                    <p><strong>Fecha de fin:</strong> ${solicitud.fecha_fin}</p>
-                                    <p><strong>Estado:</strong> <span class="${estadoClass}">${solicitud.estado}</span></p>
-                                    <p><strong>Observaciones:</strong> ${solicitud.observaciones || 'Ninguna'}</p>
-                                </li>
-                            `;
-                        });
-                        
-    
-                        solicitudesHTML += '</ul>';
-                        contenido.innerHTML = solicitudesHTML;
-                    }
+function cargarHistorialSolicitudes() {
+    console.log("Cargando historial de solicitudes de vacaciones...");
+
+    fetch('/api/solicitudes-vacaciones')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log("Historial de solicitudes recibido:", data.solicitudes);
+
+                if (data.solicitudes.length === 0) {
+                    contenido.innerHTML = '<p>No tienes solicitudes de vacaciones registradas.</p>';
                 } else {
-                    console.log("Error al cargar el historial de solicitudes de vacaciones:", data.message);
-                    contenido.innerHTML = '<p>Error al cargar el historial de solicitudes de vacaciones.</p>';
+                    let solicitudesHTML = `
+                        <h2>Historial de Solicitudes de Vacaciones</h2>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Fecha de Inicio</th>
+                                    <th>Fecha de Fin</th>
+                                    <th>Estado</th>
+                                    <th>Observaciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>`;
+
+                    data.solicitudes.forEach(solicitud => {
+                        let estadoClass = '';
+                        if (solicitud.estado === 'aprobada') {
+                            estadoClass = 'estado-aprobado';
+                        } else if (solicitud.estado === 'rechazada') {
+                            estadoClass = 'estado-rechazado';
+                        } else {
+                            estadoClass = 'estado-pendiente';
+                        }
+
+                        solicitudesHTML += `
+                            <tr>
+                                <td>${solicitud.fecha_inicio}</td>
+                                <td>${solicitud.fecha_fin}</td>
+                                <td><span class="${estadoClass}">${solicitud.estado}</span></td>
+                                <td>${solicitud.observaciones || 'Ninguna'}</td>
+                            </tr>`;
+                    });
+
+                    solicitudesHTML += `
+                            </tbody>
+                        </table>`;
+                    contenido.innerHTML = solicitudesHTML;
                 }
-            })
-            .catch(error => {
-                console.error('Error al cargar el historial de solicitudes de vacaciones:', error);
+            } else {
+                console.log("Error al cargar el historial de solicitudes de vacaciones:", data.message);
                 contenido.innerHTML = '<p>Error al cargar el historial de solicitudes de vacaciones.</p>';
-            });
-    }
+            }
+        })
+        .catch(error => {
+            console.error('Error al cargar el historial de solicitudes de vacaciones:', error);
+            contenido.innerHTML = '<p>Error al cargar el historial de solicitudes de vacaciones.</p>';
+        });
+}
+
     
 
 function cargarFormularioSolicitud() {

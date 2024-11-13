@@ -177,7 +177,7 @@ CREATE TABLE `usuarios_admin` (
   `password` varchar(255) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -186,6 +186,7 @@ CREATE TABLE `usuarios_admin` (
 
 LOCK TABLES `usuarios_admin` WRITE;
 /*!40000 ALTER TABLE `usuarios_admin` DISABLE KEYS */;
+INSERT INTO `usuarios_admin` VALUES (1,'Gael Leonardo','Bozo','11111111','lescalantegu@gmail.com','$2b$10$mzbg0oLaybGgRDuBYS7oQuVBCSg8xfZSxP77rVT/8ZZucRR6C6xba');
 /*!40000 ALTER TABLE `usuarios_admin` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -198,4 +199,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-11-12 11:16:58
+-- Dump completed on 2024-11-12 23:43:30

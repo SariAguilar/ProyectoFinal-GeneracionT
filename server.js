@@ -15,6 +15,16 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 
 
+// Middleware para verificar si el usuario es un administrador
+function isAdmin(req, res, next) {
+    if (req.session.userId && req.session.role === 'admin') {
+        next(); // El usuario está autenticado y es administrador
+    } else {
+        res.status(403).send('Acceso denegado');
+    }
+}
+
+
 // Configuración de sesiones
 app.use(session({
     secret: 's3kr3t0#CULT°', 
@@ -92,15 +102,20 @@ app.post('/login-rrhh', (req, res) => {
         const usuario = results[0];
 
         // Comparar la contraseña
-        bcrypt.compare(password, usuario.password, (err, isMatch) => {
-            if (err) throw err;
+        bcrypt.compare(password, admin.password, (err, isMatch) => {
+            if (err) {
+                console.error(err);
+                return res.status(500).send('Error en el servidor.');
+            }
 
             if (isMatch) {
-                // Si la contraseña es correcta, iniciar sesión
-                req.session.usuarioId = usuario.id;
-                return res.json({ message: "Autenticación exitosa", redirect: '/inicio-admin.html' });
+                // Contraseña correcta, iniciar sesión
+                req.session.userId = admin.id;
+                req.session.role = 'admin';
+                res.redirect('/inicio-admin'); // Redirigir al panel de RRHH
             } else {
-                return res.status(401).json({ message: "Contraseña incorrecta" });
+                // Contraseña incorrecta
+                res.status(401).send('Correo o contraseña incorrectos.');
             }
         });
     });
@@ -441,6 +456,12 @@ app.get('/inicio-empleado', (req, res) => {
         res.redirect('/login-empleado');  // Redirige a la página de login si no está autenticado
     }
 });
+
+// Ruta protegida para el panel de RRHH
+app.get('/inicio-admin', isAdmin, (req, res) => {
+    res.send('Bienvenido al panel de RRHH');
+});
+
 
 
 // Iniciar el servidor

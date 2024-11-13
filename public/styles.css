@@ -137,3 +137,33 @@ input[type="password"] {
     color: gray;
     font-weight: bold;
 }
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    padding: 8px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+.estado-aprobado {
+    color: green;
+    font-weight: bold;
+}
+
+.estado-rechazado {
+    color: red;
+    font-weight: bold;
+}
+
+.estado-pendiente {
+    color: orange;
+    font-weight: bold;
+}

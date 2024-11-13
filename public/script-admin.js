@@ -5,10 +5,12 @@ if (!sessionStorage.getItem('usuarioId')) {
 
 // Función para cargar las solicitudes de vacaciones
 function cargarSolicitudes() {
+    const container = document.getElementById('solicitudes-container');
+    container.innerHTML = '<p>Cargando solicitudes...</p>';  // Mensaje temporal
+
     fetch('/api/solicitudes')  // Endpoint para obtener las solicitudes
     .then(response => response.json())
     .then(data => {
-        const container = document.getElementById('solicitudes-container');
         container.innerHTML = '';  // Limpiar contenido actual
 
         if (data.length === 0) {
@@ -28,29 +30,50 @@ function cargarSolicitudes() {
             });
         }
     })
-    .catch(error => console.error('Error al cargar las solicitudes:', error));
+    .catch(error => {
+        console.error('Error al cargar las solicitudes:', error);
+        container.innerHTML = '<p>Error al cargar las solicitudes. Por favor, intente nuevamente.</p>';
+    });
 }
 
 // Función para aceptar una solicitud
 function aceptarSolicitud(id) {
-    fetch(`/api/solicitudes/${id}/aceptar`, { method: 'POST' })
-    .then(response => response.json())
-    .then(data => {
-        alert('Solicitud aceptada');
-        cargarSolicitudes();  // Recargar las solicitudes
-    })
-    .catch(error => console.error('Error al aceptar la solicitud:', error));
+    if (confirm('¿Está seguro de que desea aceptar esta solicitud?')) {
+        fetch(`/api/solicitudes/${id}/aceptar`, { method: 'POST' })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Solicitud aceptada');
+                cargarSolicitudes();  // Recargar las solicitudes
+            } else {
+                alert('Hubo un error al aceptar la solicitud. Intente nuevamente.');
+            }
+        })
+        .catch(error => {
+            console.error('Error al aceptar la solicitud:', error);
+            alert('Error al aceptar la solicitud. Intente nuevamente.');
+        });
+    }
 }
 
 // Función para denegar una solicitud
 function denegarSolicitud(id) {
-    fetch(`/api/solicitudes/${id}/denegar`, { method: 'POST' })
-    .then(response => response.json())
-    .then(data => {
-        alert('Solicitud denegada');
-        cargarSolicitudes();  // Recargar las solicitudes
-    })
-    .catch(error => console.error('Error al denegar la solicitud:', error));
+    if (confirm('¿Está seguro de que desea denegar esta solicitud?')) {
+        fetch(`/api/solicitudes/${id}/denegar`, { method: 'POST' })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Solicitud denegada');
+                cargarSolicitudes();  // Recargar las solicitudes
+            } else {
+                alert('Hubo un error al denegar la solicitud. Intente nuevamente.');
+            }
+        })
+        .catch(error => {
+            console.error('Error al denegar la solicitud:', error);
+            alert('Error al denegar la solicitud. Intente nuevamente.');
+        });
+    }
 }
 
 // Función para cerrar sesión
