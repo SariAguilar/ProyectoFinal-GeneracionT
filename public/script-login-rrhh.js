@@ -1,4 +1,3 @@
-// Lógica para manejar el inicio de sesión
 document.getElementById('login-rrhh-form').addEventListener('submit', function (event) {
     event.preventDefault(); // Evitar la acción por defecto del formulario
 
@@ -10,19 +9,27 @@ document.getElementById('login-rrhh-form').addEventListener('submit', function (
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(errData => {
+                throw new Error(errData.message || 'Error desconocido');
+            });
+        }
+        return response.json();
+    })
     .then(data => {
-        console.log(data);  
-        if (data.redirect) {
-            // Si la respuesta contiene una URL de redirección, hacer la redirección
-            window.location.href = '/inicio-admin';
+        if (data.redirect === true && data.url) {
+            // Redirige a la URL proporcionada en la respuesta JSON
+            document.getElementById('message').innerText = 'Inicio de sesión exitoso, redirigiendo...';
+            window.location.href = data.url;
         } else {
-            // Mostrar mensaje de error si no hay redirección
-            document.getElementById('message').innerText = 'Correo o contraseña incorrectos';
+            // Aquí ya no es necesario acceder a `error`, ya que no es accesible en este bloque
+            document.getElementById('message').innerText = data.message || 'Error no especificado';
         }
     })
     .catch(error => {
+        // Este bloque maneja los errores de la solicitud y muestra un mensaje adecuado
+        document.getElementById('message').innerText = `Error: ${error.message}`;
         console.error('Error en la solicitud:', error);
-        document.getElementById('message').innerText = 'Hubo un problema con el inicio de sesión';
     });
 });

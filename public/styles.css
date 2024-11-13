@@ -60,8 +60,8 @@ button {
 }
 
 button:hover {
-    background: #FC9F5B; /* Color de fondo al pasar el ratón */
-        transform: translateY(-3px); /* Levanta ligeramente el botón al pasar el ratón */
+    background: linear-gradient(to bottom, #FC9F5B, #e79154);
+            transform: translateY(-3px); /* Levanta ligeramente el botón al pasar el ratón */
     
     
 
@@ -71,7 +71,10 @@ button:hover {
     background: linear-gradient(to bottom, #f6f0ca, #d2f3c8);
     color:#42B391 ;
 }
-
+#registerBtn:hover{
+    background: linear-gradient(to bottom, #FC9F5B, #e79154);
+    color:#ffffff ;
+}
 
 /* Estilo para el enlace de "Volver al inicio" */
 #inicioBtn {

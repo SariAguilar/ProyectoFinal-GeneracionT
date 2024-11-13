@@ -17,10 +17,11 @@ app.use(express.json());
 
 // Middleware para verificar si el usuario es un administrador
 function isAdmin(req, res, next) {
-    if (req.session.userId && req.session.role === 'admin') {
-        next(); // El usuario está autenticado y es administrador
+    console.log("Sesión:", req.session); // Añadir este log
+    if (req.session && req.session.role === 'admin') {
+        return next();
     } else {
-        res.status(403).send('Acceso denegado');
+        res.status(403).json({ message: 'Acceso denegado.' });
     }
 }
 
@@ -95,27 +96,30 @@ app.post('/login-rrhh', (req, res) => {
             return res.status(500).json({ message: "Error interno del servidor" });
         }
 
+        // Si no encontramos al usuario con ese correo
         if (results.length === 0) {
             return res.status(401).json({ message: "Correo no registrado" });
         }
 
         const usuario = results[0];
 
-        // Comparar la contraseña
-        bcrypt.compare(password, admin.password, (err, isMatch) => {
+        // Comparar la contraseña con bcrypt
+        bcrypt.compare(password, usuario.password, (err, isMatch) => {
             if (err) {
-                console.error(err);
-                return res.status(500).send('Error en el servidor.');
+                console.error("Error al comparar la contraseña:", err);
+                return res.status(500).json({ message: 'Error en el servidor.' });
             }
 
             if (isMatch) {
-                // Contraseña correcta, iniciar sesión
-                req.session.userId = admin.id;
-                req.session.role = 'admin';
-                res.redirect('/inicio-admin'); // Redirigir al panel de RRHH
+                // Si la contraseña es correcta, guardar la sesión del usuario
+                req.session.userId = usuario.id; // Guarda el id del usuario en la sesión
+                req.session.role = 'admin'; // Guarda el rol como 'admin'
+
+                // Enviar respuesta con redirección al frontend
+                res.json({ redirect: true, url: '/inicio-admin.html' }); // Redirige al administrador
             } else {
-                // Contraseña incorrecta
-                res.status(401).send('Correo o contraseña incorrectos.');
+                // Si la contraseña no es correcta
+                res.status(401).json({ message: 'Correo o contraseña incorrectos.' });
             }
         });
     });
@@ -123,7 +127,7 @@ app.post('/login-rrhh', (req, res) => {
 
 // Obtener todas las solicitudes pendientes
 app.get('/api/solicitudes', (req, res) => {
-    const query = 'SELECT * FROM solicitudes WHERE estado = "pendiente"';
+    const query = 'SELECT * FROM solicitudes_vacaciones WHERE estado = "pendiente"';
     db.query(query, (err, results) => {
         if (err) {
             console.error("Error al obtener las solicitudes:", err);
@@ -446,7 +450,7 @@ app.get('/login-empleado', (req, res) => {
 });
 
 app.get('/login-RRHH', (req, res) => {
-    res.sendFile(path.join(__dirname, 'views', 'login-RRHH.html'));
+    res.sendFile(path.join(__dirname, 'views', 'login-rrhh.html'));
 });
 
 app.get('/inicio-empleado', (req, res) => {
@@ -458,9 +462,11 @@ app.get('/inicio-empleado', (req, res) => {
 });
 
 // Ruta protegida para el panel de RRHH
-app.get('/inicio-admin', isAdmin, (req, res) => {
-    res.send('Bienvenido al panel de RRHH');
+app.get('/inicio-admin.html', isAdmin, (req, res) => {
+    res.sendFile(path.join(__dirname, 'views', 'inicio-admin.html'));
 });
+
+
 
 
 
