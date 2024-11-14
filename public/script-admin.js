@@ -6,12 +6,16 @@ if (!sessionStorage.getItem('usuarioId')) {
 // Función para cargar las solicitudes de vacaciones
 function cargarSolicitudes() {
     const container = document.getElementById('solicitudes-container');
-    container.innerHTML = '<p>Cargando solicitudes...</p>';  // Mensaje temporal
+    container.innerHTML = '<p>Cargando solicitudes...</p>';
 
-    fetch('/api/solicitudes')  // Endpoint para obtener las solicitudes
-    .then(response => response.json())
+    fetch('/api/solicitudes')
+    .then(response => {
+        if (!response.ok) throw new Error('Error en la respuesta del servidor');
+        return response.json();
+    })
     .then(data => {
-        container.innerHTML = '';  // Limpiar contenido actual
+        console.log("Datos recibidos de solicitudes:", data);  // Añadir log para verificar los datos
+        container.innerHTML = '';
 
         if (data.length === 0) {
             container.innerHTML = '<p>No hay solicitudes pendientes.</p>';
@@ -35,6 +39,7 @@ function cargarSolicitudes() {
         container.innerHTML = '<p>Error al cargar las solicitudes. Por favor, intente nuevamente.</p>';
     });
 }
+
 
 // Función para aceptar una solicitud
 function aceptarSolicitud(id) {
@@ -79,8 +84,17 @@ function denegarSolicitud(id) {
 // Función para cerrar sesión
 function cerrarSesion() {
     sessionStorage.removeItem('usuarioId');  // Eliminar la sesión
-    window.location.href = 'login-rrhh.html';  // Redirigir al login
+
+    fetch('/api/logout', { method: 'POST' })
+        .then(() => {
+            window.location.href = '/public/index.html';  // Redirigir al login
+        })
+        .catch(error => {
+            console.error('Error al cerrar sesión:', error);
+            alert('Error al cerrar sesión. Intente nuevamente.');
+        });
 }
+
 
 // Cargar las solicitudes al inicio
 cargarSolicitudes();

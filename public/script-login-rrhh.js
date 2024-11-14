@@ -17,16 +17,17 @@ document.getElementById('login-rrhh-form').addEventListener('submit', function (
         }
         return response.json();
     })
+    
     .then(data => {
         if (data.redirect === true && data.url) {
-            // Redirige a la URL proporcionada en la respuesta JSON
+            console.log('Redireccionando a:', data.url);  // Agrega este log
             document.getElementById('message').innerText = 'Inicio de sesión exitoso, redirigiendo...';
             window.location.href = data.url;
         } else {
-            // Aquí ya no es necesario acceder a `error`, ya que no es accesible en este bloque
             document.getElementById('message').innerText = data.message || 'Error no especificado';
         }
     })
+    
     .catch(error => {
         // Este bloque maneja los errores de la solicitud y muestra un mensaje adecuado
         document.getElementById('message').innerText = `Error: ${error.message}`;

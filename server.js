@@ -8,6 +8,7 @@ const path = require('path');
 const app = express();
 const port = 3000;
 
+
 // Middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true })); // Habilita URL-encoded para datos enviados por formularios
@@ -137,7 +138,6 @@ app.get('/api/solicitudes', (req, res) => {
     });
 });
 
-// Aceptar una solicitud
 app.post('/api/solicitudes/:id/aceptar', (req, res) => {
     const { id } = req.params;
     const query = 'UPDATE solicitudes SET estado = "aceptada" WHERE id = ?';
@@ -150,7 +150,6 @@ app.post('/api/solicitudes/:id/aceptar', (req, res) => {
     });
 });
 
-// Denegar una solicitud
 app.post('/api/solicitudes/:id/denegar', (req, res) => {
     const { id } = req.params;
     const query = 'UPDATE solicitudes SET estado = "denegada" WHERE id = ?';
@@ -463,7 +462,7 @@ app.get('/inicio-empleado', (req, res) => {
 
 // Ruta protegida para el panel de RRHH
 app.get('/inicio-admin.html', isAdmin, (req, res) => {
-    res.sendFile(path.join(__dirname, 'views', 'inicio-admin.html'));
+    res.sendFile(path.join(__dirname,  'inicio-admin.html'));
 });
 
 
