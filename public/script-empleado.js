@@ -35,15 +35,19 @@ function cargarPerfil() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
+                // Formateo de fechas
+                const fechaNacimiento = new Date(data.usuario.fecha_nacimiento).toLocaleDateString();
+                const fechaIngreso = new Date(data.usuario.fecha_ingreso).toLocaleDateString();
+
                 contenido.innerHTML = `
                     <h2>Mi Perfil</h2>
                     <p><strong>Nombre Completo:</strong> ${data.usuario.nombre} ${data.usuario.apellido}</p>
                     <p><strong>DNI:</strong> ${data.usuario.dni}</p>
                     <p><strong>Rol:</strong> ${data.usuario.rol}</p>
                     <p><strong>Correo:</strong> ${data.usuario.email}</p>
-                    <p><strong>Fecha de Nacimiento:</strong> ${data.usuario.fecha_nacimiento}</p>
+                    <p><strong>Fecha de Nacimiento:</strong> ${fechaNacimiento}</p>
                     <p><strong>Días de Vacaciones Acumulados:</strong> ${data.usuario.dias_vacaciones_acumulados}</p>
-                    <p><strong>Fecha de Ingreso:</strong> ${data.usuario.fecha_ingreso}</p>
+                    <p><strong>Fecha de Ingreso:</strong> ${fechaIngreso}</p>
                 `;
             } else {
                 contenido.innerHTML = '<p>Error al cargar la información del perfil.</p>';
@@ -54,7 +58,6 @@ function cargarPerfil() {
             contenido.innerHTML = '<p>Error al cargar la información del perfil.</p>';
         });
 }
-
 
 function cargarHistorialSolicitudes() {
     console.log("Cargando historial de solicitudes de vacaciones...");
@@ -82,6 +85,10 @@ function cargarHistorialSolicitudes() {
                             <tbody>`;
 
                     data.solicitudes.forEach(solicitud => {
+                        // Formateo de fechas
+                        const fechaInicio = new Date(solicitud.fecha_inicio).toLocaleDateString();
+                        const fechaFin = new Date(solicitud.fecha_fin).toLocaleDateString();
+                        
                         let estadoClass = '';
                         if (solicitud.estado === 'aprobada') {
                             estadoClass = 'estado-aprobado';
@@ -93,8 +100,8 @@ function cargarHistorialSolicitudes() {
 
                         solicitudesHTML += `
                             <tr>
-                                <td>${solicitud.fecha_inicio}</td>
-                                <td>${solicitud.fecha_fin}</td>
+                                <td>${fechaInicio}</td>
+                                <td>${fechaFin}</td>
                                 <td><span class="${estadoClass}">${solicitud.estado}</span></td>
                                 <td>${solicitud.observaciones || 'Ninguna'}</td>
                             </tr>`;
@@ -115,8 +122,6 @@ function cargarHistorialSolicitudes() {
             contenido.innerHTML = '<p>Error al cargar el historial de solicitudes de vacaciones.</p>';
         });
 }
-
-    
 
 function cargarFormularioSolicitud() {
     contenido.innerHTML = `
@@ -154,11 +159,7 @@ function cargarFormularioSolicitud() {
         })
         .then(response => response.json())
         .then(data => {
-            if (data.success) {
-                mensaje.textContent = 'Solicitud enviada correctamente.';
-            } else {
-                mensaje.textContent = 'Error al enviar la solicitud: ' + data.message;
-            }
+            mensaje.textContent = data.success ? 'Solicitud enviada correctamente.' : 'Error al enviar la solicitud: ' + data.message;
         })
         .catch(error => {
             console.error('Error:', error);
@@ -166,22 +167,6 @@ function cargarFormularioSolicitud() {
         });
     });
 }
-;
-        fetch('/api/solicitar-vacaciones', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ fechaInicio, fechaFin, observaciones })
-        })
-        .then(response => response.json())
-        .then(data => {
-            mensaje.textContent = data.success ? 'Solicitud enviada correctamente.' : 'Error al enviar la solicitud: ' + data.message;
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            mensaje.textContent = 'Error al enviar la solicitud. Por favor, inténtalo de nuevo.';
-        });
-
-
 
 function cerrarSesion() {
     const confirmacion = confirm('¿Estás seguro de que deseas cerrar sesión?');

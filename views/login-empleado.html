@@ -8,6 +8,11 @@
     <title>Login</title>
 
     <script>
+        
+        document.getElementById("inicioBtn").addEventListener("click", function() {
+      window.location.href = "index.html";
+    });
+
         async function loginEmpleado(event) {
             event.preventDefault(); // Evitar que el formulario recargue la página
             const email = document.getElementById('email').value;
@@ -30,11 +35,18 @@
                 alert('Credenciales incorrectas o empleado no encontrado');
             }
         }
+
+
+        
     </script>
 </head>
 <body>
 
-    <h2>Iniciar sesión</h2>
+    <header><h1> Plataforma Gestión de Vacaciones    </h1></header>
+
+
+<main>
+    <h2>Iniciar sesión - Empleado </h2>
     <form onsubmit="loginEmpleado(event)">
 
         <label for="email">Email:</label><br>
@@ -43,7 +55,15 @@
         <label for="password">Contraseña:</label><br>
         <input type="password" id="password" required><br><br>
 
-        <input type="submit" value="Iniciar sesión">
+        <button type="submit">Iniciar Sesión</button>
+        <button id="inicioBtn">Inicio</button>
     </form>
+</main>
+    
+
+    <footer>
+        <p>&copy; 2024 Gestión de Vacaciones</p>
+    </footer>
+
 </body>
 </html>

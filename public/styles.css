@@ -16,13 +16,14 @@ header {
     padding: 1.5rem;
     text-align: center;
     border-bottom: 4px solid #ffffff; /* Línea inferior del encabezado */
+    font-size: 1.5rem;
 }
 
 /* Estilo para el contenido principal */
 main {
-    max-width: 600px;
+    max-width: 800px; /* Ancho máximo para mayor consistencia */
     margin: 20px auto;
-    padding: 20px;
+    padding: 30px;
     background: #fff; /* Fondo blanco para el contenido */
     border-radius: 10px;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
@@ -33,6 +34,7 @@ h2 {
     font-size: 2rem;
     color: #33CA7F; /* Color de los encabezados */
     text-align: center;
+    margin-bottom: 20px;
 }
 
 /* Estilo para los párrafos */
@@ -40,66 +42,57 @@ p {
     text-align: center;
     font-size: 1.1rem;
     color: #333333c6;
+    margin-bottom: 20px;
 }
 
-/* Estilo para los botones */
 /* Estilo para los botones */
 button {
     padding: 10px;
     color: #fff;
-    border-radius: 1px;
+    border-radius: 5px;
     border: none;
     margin: 10px 0;
     background: linear-gradient(to bottom, #7DCFB6, #42B391); /* Degradado en el botón */
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); /* Sombra para darle profundidad */
     transition: all 0.3s ease; /* Transición suave al pasar el ratón */
     width: 100%; /* Botones a full-width */
-
-
-
+    cursor: pointer;
 }
 
 button:hover {
     background: linear-gradient(to bottom, #FC9F5B, #e79154);
-            transform: translateY(-3px); /* Levanta ligeramente el botón al pasar el ratón */
-    
-    
-
+    transform: translateY(-3px); /* Levanta ligeramente el botón al pasar el ratón */
 }
 
-#registerBtn{
+/* Estilo especial para botones específicos */
+#registerBtn {
     background: linear-gradient(to bottom, #f6f0ca, #d2f3c8);
-    color:#42B391 ;
+    color: #42B391;
 }
-#registerBtn:hover{
+
+#registerBtn:hover {
     background: linear-gradient(to bottom, #FC9F5B, #e79154);
-    color:#ffffff ;
+    color: #ffffff;
 }
 
 /* Estilo para el enlace de "Volver al inicio" */
 #inicioBtn {
     text-align: center; /* Centra el texto */
     margin-top: 15px; /* Espaciado superior */
-    color: #ffffff; /* Color azul por defecto */
+    color: #ffffff; /* Color del botón */
     text-decoration: none; /* Sin subrayado */
     font-weight: lighter; /* Fuente ligera */
-    background-color:#FC9F5B;
-    border:none;
-    
+    background-color: #FC9F5B;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    display: inline-block;
 }
 
 #inicioBtn:hover {
-    text-decoration: underline; /* Subrayar al pasar el mouse */
-    color: #cad5d0; /* Cambia el color al pasar el mouse */
-}
-
-/* Estilo para el pie de página */
-footer {
-    text-align: center;
-    margin-top: 20px;
-    padding: 10px 0;
-    color: #333;
-    border-radius: 0 0 10px 10px; /* Esquinas redondeadas en la parte inferior */
+    background-color: #e79154;
+    color: #ffffff; /* Cambia el color al pasar el mouse */
 }
 
 /* Estilo para los contenedores de formularios */
@@ -107,16 +100,36 @@ footer {
     margin-bottom: 15px;
 }
 
+
+.cerrar-sesion {
+
+    background-color: #FF0000; /* Rojo, pero puedes personalizarlo */
+    color: #FFFFFF; /* Blanco */
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;  
+
+}
+
+  .cerrar-sesion:hover {
+    background-color: #CC0000;
+  }
+
 /* Estilo para los campos de entrada */
 input[type="text"], 
 input[type="email"], 
-input[type="password"] {
+input[type="password"], 
+input[type="date"] {
     width: 100%;
-    padding: 10px;
-    margin-top: 5px;
+    padding: 12px;
+    margin-top: 10px;
     border: 1px solid #ddd;
     border-radius: 5px;
     box-sizing: border-box;
+    background-color: #f9f9f9;
+    font-size: 1rem;
 }
 
 /* Estilo para el mensaje de error */
@@ -126,36 +139,61 @@ input[type="password"] {
     font-size: 0.9rem;
     margin-top: 10px;
 }
-.estado-aprobado {
-    color: green;
-    font-weight: bold;
-}
 
-.estado-rechazado {
-    color: red;
-    font-weight: bold;
-}
-
-.estado-pendiente {
-    color: gray;
-    font-weight: bold;
-}
+/* Estilo para tablas */
 table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
+    font-size: 1rem;
 }
 
 th, td {
-    padding: 8px;
+    padding: 12px;
     border: 1px solid #ddd;
     text-align: left;
 }
 
 th {
+    background-color: #4CAF50;
+    color: white;
+    text-align: center;
+}
+
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+tr:hover {
+    background-color: #ddd;
+}
+
+/* Estilo específico para la tabla de solicitudes */
+#solicitudes-table {
+    margin-top: 30px;
+}
+
+#solicitudes-table th, 
+#solicitudes-table td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: center;
+}
+
+#solicitudes-table th {
+    background-color: #42B391;
+    color: white;
+}
+
+#solicitudes-table tr:nth-child(even) {
     background-color: #f2f2f2;
 }
 
+#solicitudes-table tr:hover {
+    background-color: #ddd;
+}
+
+/* Estados de solicitud */
 .estado-aprobado {
     color: green;
     font-weight: bold;
@@ -169,4 +207,13 @@ th {
 .estado-pendiente {
     color: orange;
     font-weight: bold;
+}
+
+/* Estilo para el pie de página */
+footer {
+    text-align: center;
+    margin-top: auto;
+    padding: 15px 0;
+    color: #333;
+
 }

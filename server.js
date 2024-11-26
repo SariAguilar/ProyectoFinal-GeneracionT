@@ -16,24 +16,35 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 
 
-// Middleware para verificar si el usuario es un administrador
-function isAdmin(req, res, next) {
-    console.log("Sesión:", req.session); // Añadir este log
-    if (req.session && req.session.role === 'admin') {
-        return next();
-    } else {
-        res.status(403).json({ message: 'Acceso denegado.' });
-    }
-}
-
 
 // Configuración de sesiones
 app.use(session({
     secret: 's3kr3t0#CULT°', 
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false, maxAge: 60000 } // Agregar maxAge para duración de la sesión
+    cookie: { secure: false, maxAge: 3600000 } // Sesión persistente por 1 hora
 }));
+// Middleware para verificar si el usuario es un administrador
+function isAdmin(req, res, next) {
+    console.log('Verificando sesión:', req.session); // Log para verificar la sesión
+
+    if (req.session && req.session.role === 'admin') {
+        console.log('Acceso autorizado.'); // Este mensaje debería mostrarse si todo está bien
+        return next();
+    } else {
+        console.log('Redirigiendo al login. Rol:', req.session ? req.session.role : 'No definido');
+        res.redirect('/login-rrhh.html');
+    }
+}
+
+app.get('/check-session', (req, res) => {
+    console.log('Sesión actual:', req.session);
+    res.json({
+        loggedIn: !!req.session.role,
+        role: req.session.role || 'No definido',
+        user: req.session.user || 'No definido'
+    });
+});
 
 // Conexión a la base de datos
 const db = mysql.createConnection({
@@ -97,6 +108,8 @@ app.post('/login-rrhh', (req, res) => {
             return res.status(500).json({ message: "Error interno del servidor" });
         }
 
+        console.log("Resultados de la base de datos:", results);  // Agrega este log para revisar los resultados
+
         // Si no encontramos al usuario con ese correo
         if (results.length === 0) {
             return res.status(401).json({ message: "Correo no registrado" });
@@ -126,13 +139,37 @@ app.post('/login-rrhh', (req, res) => {
     });
 });
 
+
+app.get('/inicio-admin.html', isAdmin, (req, res) => {
+    console.log('Sesión:', req.session);
+    res.sendFile(path.join(__dirname, 'views', 'inicio-admin.html'));
+});
+
+
+
 // Obtener todas las solicitudes pendientes
 app.get('/api/solicitudes', (req, res) => {
-    const query = 'SELECT * FROM solicitudes_vacaciones WHERE estado = "pendiente"';
+    const query = `
+        SELECT 
+            s.id,
+            e.nombre,
+            e.apellido,
+            s.fecha_inicio,
+            s.fecha_fin
+        FROM 
+            solicitudes_vacaciones s
+        JOIN 
+            empleados e 
+        ON 
+            s.empleado_id = e.id
+        WHERE 
+            s.estado = 'pendiente';
+    `;
+    
     db.query(query, (err, results) => {
         if (err) {
             console.error("Error al obtener las solicitudes:", err);
-            return res.status(500).json({ message: "Error al obtener las solicitudes" });
+            return res.status(500).json({ success: false, message: "Error al obtener las solicitudes" });
         }
         res.json(results);
     });
@@ -140,27 +177,28 @@ app.get('/api/solicitudes', (req, res) => {
 
 app.post('/api/solicitudes/:id/aceptar', (req, res) => {
     const { id } = req.params;
-    const query = 'UPDATE solicitudes SET estado = "aceptada" WHERE id = ?';
+    const query = 'UPDATE solicitudes_vacaciones SET estado = "aceptada" WHERE id = ?';
     db.query(query, [id], (err, result) => {
         if (err) {
             console.error("Error al aceptar la solicitud:", err);
-            return res.status(500).json({ message: "Error al aceptar la solicitud" });
+            return res.status(500).json({ success: false, message: "Error al aceptar la solicitud" });
         }
-        res.json({ message: 'Solicitud aceptada' });
+        res.json({ success: true, message: 'Solicitud aceptada' });
     });
 });
 
 app.post('/api/solicitudes/:id/denegar', (req, res) => {
     const { id } = req.params;
-    const query = 'UPDATE solicitudes SET estado = "denegada" WHERE id = ?';
+    const query = 'UPDATE solicitudes_vacaciones SET estado = "denegada" WHERE id = ?';
     db.query(query, [id], (err, result) => {
         if (err) {
             console.error("Error al denegar la solicitud:", err);
-            return res.status(500).json({ message: "Error al denegar la solicitud" });
+            return res.status(500).json({ success: false, message: "Error al denegar la solicitud" });
         }
-        res.json({ message: 'Solicitud denegada' });
+        res.json({ success: true, message: 'Solicitud denegada' });
     });
 });
+
 
 
 //Cerrar Sesión
@@ -462,9 +500,9 @@ app.get('/inicio-empleado', (req, res) => {
 
 // Ruta protegida para el panel de RRHH
 app.get('/inicio-admin.html', isAdmin, (req, res) => {
-    res.sendFile(path.join(__dirname,  'inicio-admin.html'));
+    console.log('Sesión al cargar /inicio-admin.html:', req.session);
+    res.sendFile(path.join(__dirname, 'views', 'inicio-admin.html'));
 });
-
 
 
 

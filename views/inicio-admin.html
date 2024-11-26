@@ -4,16 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Administrar Solicitudes de Vacaciones</title>
-    <link rel="stylesheet" href="/public/styles.css">
+    <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
-    <h1>Administración de Solicitudes de Vacaciones</h1>
 
+<header> <h1> Plataforma de gestión de vacaciones</h1>
+</header>
     <button onclick="cerrarSesion()">Cerrar Sesión</button>
-    <div id="solicitudes-container">
-        <p>Cargando solicitudes pendientes...</p>
-    </div>
+    <main>
+        <h2>Administración de solicitudes</h2>
+        <div id="solicitudes-container">
+            <table id="solicitudes-table">
+                <thead>
+                    <tr>
+                        <th>Empleado</th>
+                        <th>Fecha Inicio</th>
+                        <th>Fecha Fin</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Aquí se insertarán las filas dinámicamente -->
+                </tbody>
+            </table>
+        </div>
+    </main>
+   
+    <footer>
+        <p>&copy; 2024 Gestión de Vacaciones</p>
+    </footer>
 
-    <script src="/public/script-admin.js"></script>
+
+    <script src="script-admin.js"></script>
 </body>
 </html>
